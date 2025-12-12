@@ -3,9 +3,9 @@ package com.ext.auto_dropdown
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
@@ -19,6 +19,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 
+@RequiresApi(Build.VERSION_CODES.Q)
 class AutoDropdown(context: Context, attrs: AttributeSet?) :
     AppCompatAutoCompleteTextView(context, attrs) {
 
@@ -27,6 +28,9 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
     private var dropdownBgColor: Int
     private var dropdownTextColorValue: Int
     private var dropdownTextSizeValue: Float
+    private var arrowColorValue: Int
+    private var arrowSizeValue: Float
+    private var fontFamilyValue: String?
 
     init {
         val styledAttr = context.obtainStyledAttributes(attrs, R.styleable.AutoDropdown)
@@ -37,13 +41,22 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
         val radius = styledAttr.getDimension(R.styleable.AutoDropdown_dropdownRadius, 12f)
         val hintText = styledAttr.getString(R.styleable.AutoDropdown_hintText) ?: "Select option"
         dropdownTextSizeValue = styledAttr.getDimension(R.styleable.AutoDropdown_dropdownTextSize, 16f)
+        arrowColorValue = styledAttr.getColor(R.styleable.AutoDropdown_arrowColor, 0xFF757575.toInt())
+        arrowSizeValue = styledAttr.getDimension(R.styleable.AutoDropdown_arrowSize, 24f) // default 24dp
+        fontFamilyValue = styledAttr.getString(R.styleable.AutoDropdown_fontFamily)
 
         styledAttr.recycle()
 
         listItems = getListBasedOnType(type)
 
-        // Custom adapter with better styling
-        val arrayAdapter = CustomDropdownAdapter(context, listItems, dropdownTextColorValue, dropdownTextSizeValue)
+        // Custom adapter with styling
+        val arrayAdapter = CustomDropdownAdapter(
+            context,
+            listItems,
+            dropdownTextColorValue,
+            dropdownTextSizeValue,
+            fontFamilyValue
+        )
         setAdapter(arrayAdapter)
         threshold = 1
 
@@ -59,8 +72,8 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
             setStroke(2, 0xFFE0E0E0.toInt())
         }
 
-        // Create and set arrow drawable
-        arrowDrawable = ArrowDrawable(context)
+        // Create arrow drawable with custom color & size
+        arrowDrawable = ArrowDrawable(context, arrowColorValue, arrowSizeValue)
         setCompoundDrawablesWithIntrinsicBounds(null, null, arrowDrawable, null)
         compoundDrawablePadding = (8 * resources.displayMetrics.density).toInt()
 
@@ -69,14 +82,12 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
         dropDownVerticalOffset = (4 * resources.displayMetrics.density).toInt()
         dropDownHorizontalOffset = 0
 
-        // Disable overscroll effect in dropdown list
-        setOnTouchListener { v, event ->
-            // Access the popup ListView and disable overscroll
+        // Disable overscroll in dropdown list
+        setOnTouchListener { _, _ ->
             try {
                 val popupField = AppCompatAutoCompleteTextView::class.java.getDeclaredField("mPopup")
                 popupField.isAccessible = true
                 val popup = popupField.get(this)
-
                 val listViewField = popup.javaClass.getDeclaredField("mDropDownList")
                 listViewField.isAccessible = true
                 val listView = listViewField.get(popup) as? android.widget.ListView
@@ -87,15 +98,13 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
             false
         }
 
-        // Toggle dropdown when clicked
+        // Toggle dropdown and animate arrow
         setOnClickListener {
-            // Disable overscroll when dropdown opens
             post {
                 try {
                     val popupField = AppCompatAutoCompleteTextView::class.java.getDeclaredField("mPopup")
                     popupField.isAccessible = true
                     val popup = popupField.get(this)
-
                     val listViewField = popup.javaClass.getDeclaredField("mDropDownList")
                     listViewField.isAccessible = true
                     val listView = listViewField.get(popup) as? android.widget.ListView
@@ -128,27 +137,13 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
         return GradientDrawable().apply {
             setColor(0xFFFFFFFF.toInt())
             cornerRadius = 12 * resources.displayMetrics.density
-            setStroke(
-                (1 * resources.displayMetrics.density).toInt(),
-                0xFFE0E0E0.toInt()
-            )
-            // Add elevation for shadow effect (API 21+)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                setPadding(
-                    0,
-                    (8 * resources.displayMetrics.density).toInt(),
-                    0,
-                    (8 * resources.displayMetrics.density).toInt()
-                )
-            }
+            setStroke((1 * resources.displayMetrics.density).toInt(), 0xFFE0E0E0.toInt())
         }
     }
 
     override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: android.graphics.Rect?) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect)
-        if (!focused) {
-            arrowDrawable.animateRotation(false)
-        }
+        if (!focused) arrowDrawable.animateRotation(false)
     }
 
     private fun getListBasedOnType(type: String): List<String> {
@@ -164,16 +159,15 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
         }
     }
 
-    // Custom Arrow Drawable with rotation animation
-    private class ArrowDrawable(context: Context) : Drawable() {
+    // Arrow drawable with color & size
+    private class ArrowDrawable(context: Context, color: Int, private val arrowSize: Float) : Drawable() {
         private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = 0xFF757575.toInt()
+            this.color = color
             style = Paint.Style.FILL
         }
 
         private val path = Path()
         private var rotation = 0f
-        private val size = (24 * context.resources.displayMetrics.density).toInt()
 
         override fun draw(canvas: Canvas) {
             val bounds = bounds
@@ -184,10 +178,10 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
             canvas.rotate(rotation, centerX, centerY)
 
             path.reset()
-            val arrowSize = size * 0.3f
-            path.moveTo(centerX - arrowSize, centerY - arrowSize / 3)
-            path.lineTo(centerX, centerY + arrowSize / 3)
-            path.lineTo(centerX + arrowSize, centerY - arrowSize / 3)
+            val sizePx = arrowSize
+            path.moveTo(centerX - sizePx / 2, centerY - sizePx / 3)
+            path.lineTo(centerX, centerY + sizePx / 3)
+            path.lineTo(centerX + sizePx / 2, centerY - sizePx / 3)
             path.close()
 
             canvas.drawPath(path, paint)
@@ -206,26 +200,20 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
             animator.start()
         }
 
-        override fun setAlpha(alpha: Int) {
-            paint.alpha = alpha
-        }
-
-        override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {
-            paint.colorFilter = colorFilter
-        }
-
+        override fun setAlpha(alpha: Int) { paint.alpha = alpha }
+        override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) { paint.colorFilter = colorFilter }
         override fun getOpacity(): Int = android.graphics.PixelFormat.TRANSLUCENT
-
-        override fun getIntrinsicWidth(): Int = size
-        override fun getIntrinsicHeight(): Int = size
+        override fun getIntrinsicWidth(): Int = arrowSize.toInt()
+        override fun getIntrinsicHeight(): Int = arrowSize.toInt()
     }
 
-    // Custom Adapter for better styling
+    // Adapter with fontFamily support
     private class CustomDropdownAdapter(
         context: Context,
         items: List<String>,
         private val textColor: Int,
-        private val textSize: Float
+        private val textSize: Float,
+        private val fontFamily: String?
     ) : ArrayAdapter<String>(context, 0, items) {
 
         private val inflater = LayoutInflater.from(context)
@@ -235,7 +223,6 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
             val textView: TextView
 
             if (convertView == null) {
-                // Create custom view
                 view = createCustomView(parent)
                 textView = view.findViewById(android.R.id.text1)
             } else {
@@ -243,25 +230,24 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
                 textView = view.findViewById(android.R.id.text1)
             }
 
-            // Set item text
             textView.text = getItem(position)
             textView.setTextColor(textColor)
             textView.textSize = pxToSp(textSize)
 
-            // Show/hide divider for last item
+            fontFamily?.let {
+                try {
+                    textView.typeface = Typeface.create(it, Typeface.NORMAL)
+                } catch (e: Exception) { /* ignore invalid font */ }
+            }
+
             val divider = view.findViewById<View?>(android.R.id.background)
             divider?.visibility = if (position == count - 1) View.GONE else View.VISIBLE
 
-            // Add hover effect
             view.setOnTouchListener { v, event ->
                 when (event.action) {
-                    android.view.MotionEvent.ACTION_DOWN -> {
-                        v.setBackgroundColor(0xFFF5F5F5.toInt())
-                    }
+                    android.view.MotionEvent.ACTION_DOWN -> v.setBackgroundColor(0xFFF5F5F5.toInt())
                     android.view.MotionEvent.ACTION_UP,
-                    android.view.MotionEvent.ACTION_CANCEL -> {
-                        v.setBackgroundColor(0xFFFFFFFF.toInt())
-                    }
+                    android.view.MotionEvent.ACTION_CANCEL -> v.setBackgroundColor(0xFFFFFFFF.toInt())
                 }
                 false
             }
@@ -271,20 +257,14 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
 
         private fun createCustomView(parent: ViewGroup): View {
             val container = android.widget.LinearLayout(context).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
+                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 orientation = android.widget.LinearLayout.VERTICAL
                 setBackgroundColor(0xFFFFFFFF.toInt())
             }
 
             val textView = TextView(context).apply {
                 id = android.R.id.text1
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
+                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 setPadding(
                     (20 * context.resources.displayMetrics.density).toInt(),
                     (16 * context.resources.displayMetrics.density).toInt(),
@@ -312,19 +292,13 @@ class AutoDropdown(context: Context, attrs: AttributeSet?) :
             container.addView(textView)
             container.addView(divider)
 
-            // Add ripple effect
             val outValue = android.util.TypedValue()
-            context.theme.resolveAttribute(
-                android.R.attr.selectableItemBackground,
-                outValue,
-                true
-            )
+            context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
             container.foreground = context.getDrawable(outValue.resourceId)
 
             return container
         }
 
-        private fun pxToSp(px: Float): Float =
-            px / context.resources.displayMetrics.scaledDensity
+        private fun pxToSp(px: Float): Float = px / context.resources.displayMetrics.scaledDensity
     }
 }

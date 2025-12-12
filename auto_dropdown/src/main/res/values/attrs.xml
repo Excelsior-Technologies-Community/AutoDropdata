@@ -7,5 +7,8 @@
         <attr name="dropdownRadius" format="dimension" />
         <attr name="hintText" format="string" />
         <attr name="dropdownTextSize" format="dimension" />
+        <attr name="arrowColor" format="color" /> <!-- Color of the arrow -->
+        <attr name="arrowSize" format="dimension" /> <!-- Size of the arrow -->
+        <attr name="fontFamily" format="string" /> <!-- Font family for dropdown text -->
     </declare-styleable>
 </resources>
