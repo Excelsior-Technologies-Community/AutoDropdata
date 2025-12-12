@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <!-- GST Dropdown -->
+        <com.ext.auto_dropdown.AutoDropdown
+            android:id="@+id/spGST"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="48dp"
+            android:paddingVertical="16dp"
+            android:background="@drawable/bg_dropdown"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textColorHint="#757575"
+            android:fontFamily="sans-serif-medium"
+            app:type="gst"
+            app:hintText="Select GST %"
+            app:dropdownBackground="#FFFFFF"
+            app:dropdownTextColor="#212121"
+            app:dropdownRadius="12dp"
+            app:dropdownTextSize="16sp"
+            tools:ignore="MissingClass" />
+
+        <!-- Country Dropdown -->
+        <com.ext.auto_dropdown.AutoDropdown
+            android:id="@+id/spCountries"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="48dp"
+            android:paddingVertical="16dp"
+            android:background="@drawable/bg_dropdown"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textColorHint="#757575"
+            android:fontFamily="sans-serif-medium"
+            app:type="countries"
+            app:hintText="Select Country"
+            app:dropdownBackground="#FFFFFF"
+            app:dropdownTextColor="#212121"
+            app:dropdownRadius="12dp"
+            app:dropdownTextSize="16sp"
+            tools:ignore="MissingClass" />
+
+        <!-- Unit Dropdown -->
+        <com.ext.auto_dropdown.AutoDropdown
+            android:id="@+id/spUnits"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="48dp"
+            android:paddingVertical="16dp"
+            android:background="@drawable/bg_dropdown"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textColorHint="#757575"
+            android:fontFamily="sans-serif-medium"
+            app:type="units"
+            app:hintText="Select Unit"
+            app:dropdownBackground="#FFFFFF"
+            app:dropdownTextColor="#212121"
+            app:dropdownRadius="12dp"
+            app:dropdownTextSize="16sp"
+            tools:ignore="MissingClass" />
+
+        <!-- Currency Dropdown -->
+        <com.ext.auto_dropdown.AutoDropdown
+            android:id="@+id/spCurrency"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="48dp"
+            android:paddingVertical="16dp"
+            android:background="@drawable/bg_dropdown"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textColorHint="#757575"
+            android:fontFamily="sans-serif-medium"
+            app:type="currencies"
+            app:hintText="Select Currency"
+            app:dropdownBackground="#FFFFFF"
+            app:dropdownTextColor="#212121"
+            app:dropdownRadius="12dp"
+            app:dropdownTextSize="16sp"
+            tools:ignore="MissingClass" />
+
+        <!-- Payment Mode Dropdown -->
+        <com.ext.auto_dropdown.AutoDropdown
+            android:id="@+id/spPaymentMode"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="48dp"
+            android:paddingVertical="16dp"
+            android:background="@drawable/bg_dropdown"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textColorHint="#757575"
+            android:fontFamily="sans-serif-medium"
+            app:type="paymentmodes"
+            app:hintText="Select Payment Mode"
+            app:dropdownBackground="#FFFFFF"
+            app:dropdownTextColor="#212121"
+            app:dropdownRadius="12dp"
+            app:dropdownTextSize="16sp"
+            tools:ignore="MissingClass" />
+
+        <!-- Delivery Type Dropdown -->
+        <com.ext.auto_dropdown.AutoDropdown
+            android:id="@+id/spDeliveryType"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="48dp"
+            android:paddingVertical="16dp"
+            android:background="@drawable/bg_dropdown"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textColorHint="#757575"
+            android:fontFamily="sans-serif-medium"
+            app:type="deliverytypes"
+            app:hintText="Select Delivery Type"
+            app:dropdownBackground="#FFFFFF"
+            app:dropdownTextColor="#212121"
+            app:dropdownRadius="12dp"
+            app:dropdownTextSize="16sp"
+            tools:ignore="MissingClass" />
+
+        <!-- Tax Slab Dropdown -->
+        <com.ext.auto_dropdown.AutoDropdown
+            android:id="@+id/spTaxSlab"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="48dp"
+            android:paddingVertical="16dp"
+            android:background="@drawable/bg_dropdown"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textColorHint="#757575"
+            android:fontFamily="sans-serif-medium"
+            app:type="taxslabs"
+            app:hintText="Select Tax Slab"
+            app:dropdownBackground="#FFFFFF"
+            app:dropdownTextColor="#212121"
+            app:dropdownRadius="12dp"
+            app:dropdownTextSize="16sp"
+            tools:ignore="MissingClass" />
+
+    </LinearLayout>
+</ScrollView>

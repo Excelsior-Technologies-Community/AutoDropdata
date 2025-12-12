@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AutoDropdown">
+        <attr name="type" format="string" />
+        <attr name="dropdownBackground" format="color" />
+        <attr name="dropdownTextColor" format="color" />
+        <attr name="dropdownRadius" format="dimension" />
+        <attr name="hintText" format="string" />
+        <attr name="dropdownTextSize" format="dimension" />
+    </declare-styleable>
+</resources>
