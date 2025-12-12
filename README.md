@@ -34,6 +34,14 @@ This library allows users to select from predefined datasets without manually en
 
 
 ---
+## ***✨ Preview***
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b0de5e1d-deaa-44b8-9c72-c7da8278dada"
+       alt="Demo GIF"
+       width="200">
+
+</p>
 
 ## ***📦 Installation***
 
