@@ -59,7 +59,8 @@ allprojects {
 Step 2: Add dependency to your app module's build.gradle:
 
 ```
-implementation("com.github.Excelsior-Technologies-Community:SpeechToTextEditor:1.0.1")
+	        implementation 'com.github.Excelsior-Technologies-Community:AutoDropdata:1.0.0'
+
 
 ```
 
