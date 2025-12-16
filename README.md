@@ -110,6 +110,21 @@ Step 2: Add dependency to your app module's build.gradle:
 
 ```
 
+## ***✨ autodropdowns types***
+- app:type="taxslabs"
+- app:type="deliverytypes"
+- app:type="paymentmodes"
+- app:type="currencies"
+- app:type="units"
+- app:type="countries"
+- app:type="gst"
+
+
+
+
+
+
+
 ## ***🛠 Usage Example***
 
 ```
